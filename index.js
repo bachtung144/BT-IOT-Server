@@ -2,37 +2,37 @@ const express   = require('express');
 const bodyParser= require('body-parser');
 const env       = require('./env.json');
 const cors      = require('cors');
-const mqtt = require('mqtt')
-const client = mqtt.connect('mqtt://broker.hivemq.com')
+const mqtt = require('mqtt');
+const mongoose = require('mongoose')
+const listDevice = require('./app/models/listDevice') //get to database
 
 const app = express();
-
 app.use(cors());
 app.use(bodyParser.json());
 
-client.on('connect', () => {
-    client.subscribe('list')
-    client.subscribe('state')
-    client.publish('list', JSON.stringify([1,2,3,4,5]))
-})
 
-client.on('message', (topic, message) => {
-    switch (topic) {
-        case 'state':
-            return handleList(message)
-
-    }
-    console.log('No handler for topic %s', topic)
-})
-
-const handleList = (message) => {
-    console.log('mess from',message.toString())
-    if (message.toString() === 'listDevice') {
-        client.publish('list', JSON.stringify([1,2,3,4]))
-    }
+const connectionParams={
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true
 }
 
+mongoose.connect(env.MONGODB,connectionParams)
+    .then( (db) => {
+        console.log('Connected to database ')
+        getListDevice()
+    })
+    .catch( (err) => {
+        console.error(`Error connecting to the database. \n${err}`);
+    })
 
+getListDevice = () => {
+    listDevice.find({}).then(
+        data => {
+            console.log('123',data)
+        }
+    ).catch(err =>  console.log(err))
+}
 
 app.use(function(err, req, res, next){
     res.status(422).send({error: err.message});
