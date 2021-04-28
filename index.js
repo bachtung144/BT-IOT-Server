@@ -52,7 +52,15 @@ client.on('message', (topic, message) => {
 
 const handleList = (message) => {
     let mess = JSON.parse(message.toString());
-    console.log('mess from', mess.type)
+    // console.log('123',typeof(mess))
+    if (mess !== 200) {
+        var myQuery = { id: mess?.id, room: mess?.room };
+        var newValue = { $set: { status:mess?.status } };
+        listDevice.updateOne(myQuery,newValue,(err,res) => {
+            if (err) console.log(err);
+            getListDevice();
+        })
+    }
 }
 
 app.use(function(err, req, res, next){
