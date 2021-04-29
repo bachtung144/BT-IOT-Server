@@ -11,7 +11,6 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-
 const connectionParams={
     useNewUrlParser: true,
     useCreateIndex: true,
@@ -62,11 +61,3 @@ const handleList = (message) => {
         })
     }
 }
-
-app.use(function(err, req, res, next){
-    res.status(422).send({error: err.message});
-});
-
-app.listen(env.PORT || 5000, function(){
-    console.log('now listening port:' + env.PORT);
-});
