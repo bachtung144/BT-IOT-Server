@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const listDeviceSchema = new Schema({
+const ListDeviceSchema = new Schema({
     id:{
         type: String,
         required: true
@@ -9,16 +9,16 @@ const listDeviceSchema = new Schema({
     room:{
         type: String
     },
-    type:{
-        type: String
-    },
     device:{
         type: String
     },
     status:{
         type: Boolean
+    },
+    type:{
+        type: String
     }
 })
 
-const listDevice = mongoose.model('Model',listDeviceSchema,"ListDevice")
+const listDevice = mongoose.model('Model',ListDeviceSchema,"ListDevice")
 module.exports = listDevice;
