@@ -2,15 +2,14 @@ const express   = require('express');
 const bodyParser= require('body-parser');
 const env       = require('./env.json');
 const cors      = require('cors');
+const mqtt = require('mqtt');
 const mongoose = require('mongoose')
 const listDevice = require('./app/models/listDevice') //get to database
-const mqtt = require('mqtt');
 const client = mqtt.connect('mqtt://broker.hivemq.com')
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-
 
 const connectionParams={
     useNewUrlParser: true,
@@ -29,22 +28,22 @@ mongoose.connect(env.MONGODB,connectionParams)
 
 
 client.on('connect', () => {
-    client.subscribe('listDevice')
-    client.subscribe('controlDevice')
+    client.subscribe('list')
+    client.subscribe('control')
     getListDevice()
 })
 
 getListDevice = () => {
     listDevice.find({}).then(
         data => {
-            client.publish('listDevice',JSON.stringify(data));
+            client.publish('list',JSON.stringify(data));
         }
-    ).catch(err =>   client.publish('listDevice',JSON.stringify(err)))
+    ).catch(err =>   client.publish('list',JSON.stringify(err)))
 }
 
 client.on('message', (topic, message) => {
     switch (topic) {
-        case 'controlDevice':
+        case 'control':
             return handleList(message)
     }
     console.log('No handler for topic %s', topic)
@@ -52,12 +51,23 @@ client.on('message', (topic, message) => {
 
 const handleList = (message) => {
     let mess = JSON.parse(message.toString());
+    // console.log('123',typeof(mess))
     if (mess !== 200) {
-        let myQuery = { id: mess?.id, room: mess?.room };
-        let newValue = { $set: { status:mess?.status } };
+        var myQuery = { id: mess?.id, room: mess?.room };
+        var newValue = { $set: { status:mess?.status } };
         listDevice.updateOne(myQuery,newValue,(err,res) => {
             if (err) console.log(err);
             getListDevice();
         })
     }
 }
+
+
+
+app.use(function(err, req, res, next){
+    res.status(422).send({error: err.message});
+});
+
+app.listen(env.PORT || 5000, function(){
+    console.log('now listening port:' + env.PORT);
+});
