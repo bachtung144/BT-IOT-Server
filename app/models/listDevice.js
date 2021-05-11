@@ -2,14 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ListDeviceSchema = new Schema({
-    id:{
-        type: String,
-        required: true
-    },
-    room:{
-        type: String
-    },
-    device:{
+    name:{
         type: String
     },
     status:{
@@ -17,8 +10,12 @@ const ListDeviceSchema = new Schema({
     },
     type:{
         type: String
+    },
+    id_room:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ListRoom'
     }
 })
 
-const listDevice = mongoose.model('Model',ListDeviceSchema,"ListDevice")
+const listDevice = mongoose.model('ListDeviceModel',ListDeviceSchema,"ListDevice")
 module.exports = listDevice;
