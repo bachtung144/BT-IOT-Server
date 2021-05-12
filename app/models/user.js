@@ -9,7 +9,10 @@ const UserSchema = new Schema({
         { type: mongoose.Schema.Types.ObjectId, ref: 'ListRoom' }
     ]
     ,
-    pass_word:{
+    password:{
+        type: String
+    },
+    phone:{
         type: String
     }
 })

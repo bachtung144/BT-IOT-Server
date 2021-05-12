@@ -5,37 +5,47 @@ function prgMqtt() {
     prgMqtt.client = mqtt.connect('mqtt://broker.hivemq.com')
 
     prgMqtt.client.on('connect', () => {
-        prgMqtt.client.subscribe('list')
-        prgMqtt.client.subscribe('control')
-        getListDevice()
+        // prgMqtt.client.subscribe('listDevice')
+        prgMqtt.client.subscribe('getListDevice')
+        prgMqtt.client.subscribe('controlDevice')
     })
 
     prgMqtt.client.on('message', (topic, message) => {
         switch (topic) {
-            case 'control':
-                return handleList(message)
+            case 'getListDevice':
+                return handleListDevice(message)
+            case 'controlDevice':
+                return handleControlDevice(message)
         }
         console.log('No handler for topic %s', topic)
     })
 }
 
-const getListDevice = () => {
-    listDevice.find({}).then(
-        data => {
-            prgMqtt.client.publish('list',JSON.stringify(data));
-        }
-    ).catch(err =>   prgMqtt.client.publish('list',JSON.stringify(err)))
+getListDeviceByIdRoom = (idRoom) => {
+    listDevice.find({id_room:idRoom})
+        .then(devices => {
+            if (!devices) prgMqtt.client.publish('listDevice',JSON.stringify('notFound'))
+            else prgMqtt.client.publish('listDevice',JSON.stringify(devices))
+        }).catch(err => prgMqtt.client.publish('listDevice',JSON.stringify('notFound')))
 }
 
-const handleList = (message) => {
+const handleListDevice = (message) => {
     let mess = JSON.parse(message.toString());
-    // console.log('123',typeof(mess))
     if (mess !== 200) {
-        var myQuery = { id: mess?.id, room: mess?.room };
-        var newValue = { $set: { status:mess?.status } };
+        let {idRoom} = mess
+        getListDeviceByIdRoom(idRoom)
+    }
+}
+
+const handleControlDevice = (message) => {
+    let mess = JSON.parse(message.toString());
+    if (mess !== 200) {
+        let {idRoom,idDevice} = mess
+        let myQuery = { _id: idDevice, id_room: idRoom };
+        let newValue = { $set: { status:mess?.status } };
         listDevice.updateOne(myQuery,newValue,(err,res) => {
             if (err) console.log(err);
-            getListDevice();
+            getListDeviceByIdRoom(idRoom);
         })
     }
 }
