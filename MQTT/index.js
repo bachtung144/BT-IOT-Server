@@ -5,7 +5,6 @@ function prgMqtt() {
     prgMqtt.client = mqtt.connect('mqtt://broker.hivemq.com')
 
     prgMqtt.client.on('connect', () => {
-        // prgMqtt.client.subscribe('listDevice')
         prgMqtt.client.subscribe('getListDevice')
         prgMqtt.client.subscribe('controlDevice')
     })
