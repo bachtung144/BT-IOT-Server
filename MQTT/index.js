@@ -2,7 +2,7 @@ const mqtt = require('mqtt');
 const listDevice = require('../app/models/listDevice') //get to database
 
 function prgMqtt() {
-    prgMqtt.client = mqtt.connect('mqtt://broker.hivemq.com')
+    prgMqtt.client = mqtt.connect('ws://test.mosquitto.org:8080/ws')
 
     prgMqtt.client.on('connect', () => {
         prgMqtt.client.subscribe('getListDevice')

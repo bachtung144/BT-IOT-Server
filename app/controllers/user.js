@@ -8,11 +8,11 @@ function generateToken(user){
 }
 
 exports.checkLogin = (req,res) => {
-    User.findOne({phone: req.body.phone})
+    User.findOne({phone: req.query.phone})
         .then(user => {
             if (!user) res.status(404).send({err:'no user with that phone'})
             else {
-                bcrypt.compare(req.body.password, user.password, (error, match) => {
+                bcrypt.compare(req.query.password, user.password, (error, match) => {
                     if (error) res.status(500).send(error)
                     else if (match) res.status(200).send({id:user._id,token: generateToken(user)})
                     else res.status(403).json({error:'passwords do not match'})
