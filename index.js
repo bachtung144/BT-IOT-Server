@@ -3,13 +3,12 @@ const bodyParser= require('body-parser');
 const env       = require('./env.json');
 const cors      = require('cors');
 const mongoose = require('mongoose')
-const { prgMqtt } = require("./MQTT");
+const listDevice = require("./app/models/listDevice");
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(require('./routes'));
-
 
 const connectionParams={
     useNewUrlParser: true,
@@ -26,47 +25,35 @@ mongoose.connect(env.MONGODB,connectionParams)
         console.error(`Error connecting to the database. \n${err}`);
     })
 
-prgMqtt();
+const server = require("http").Server(app);
+const io = require("socket.io")(server);
+server.listen(3000);
 
-// client.on('connect', () => {
-//     client.subscribe('list')
-//     client.subscribe('control')
-//     getListDevice()
-// })
-//
-// getListDevice = () => {
-//     listDevice.find({}).then(
-//         data => {
-//             client.publish('list',JSON.stringify(data));
-//         }
-//     ).catch(err =>   client.publish('list',JSON.stringify(err)))
-// }
-//
-// client.on('message', (topic, message) => {
-//     switch (topic) {
-//         case 'control':
-//             return handleList(message)
-//     }
-//     console.log('No handler for topic %s', topic)
-// })
-//
-// const handleList = (message) => {
-//     let mess = JSON.parse(message.toString());
-//     // console.log('123',typeof(mess))
-//     if (mess !== 200) {
-//         var myQuery = { id: mess?.id, room: mess?.room };
-//         var newValue = { $set: { status:mess?.status } };
-//         listDevice.updateOne(myQuery,newValue,(err,res) => {
-//             if (err) console.log(err);
-//             getListDevice();
-//         })
-//     }
-// }
+io.on("connection", (socket) => {
+    socket.on("disconnect", function()
+    {
+    });
+    const getListDevice = () =>{
+        listDevice.find({})
+            .then(devices => {
+                if (!devices) socket.emit('Server-list-devices', JSON.stringify([]))
+                else socket.emit('Server-list-devices', JSON.stringify(devices))
+            }).catch(err => socket.emit('Server-list-devices', err))
+    }
 
-app.use(function(err, req, res, next){
-    res.status(422).send({error: err.message});
-});
+    socket.on("Client-list-devices", function(data)
+    {
+        getListDevice()
+    });
 
-app.listen(env.PORT || 5000, function(){
-    console.log('now listening port:' + env.PORT);
+    socket.on("Client-control-device", function(data){
+        let convert = JSON.parse(data.toString());
+        let {idRoom,idDevice} = convert
+        let myQuery = { _id: idDevice, id_room: idRoom };
+        let newValue = { $set: { status:convert?.status } };
+        listDevice.updateOne(myQuery,newValue,(err,res) => {
+            if (err) console.log(err);
+            getListDevice()
+        })
+    })
 });
