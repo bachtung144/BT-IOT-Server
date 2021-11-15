@@ -8,7 +8,8 @@ function generateToken(user){
 }
 
 exports.checkLogin = (req,res) => {
-    User.findOne({phone: req.query.phone})
+    const {phone} = req.query
+    User.findOne({phone: phone})
         .then(user => {
             if (!user) res.status(404).send({err:'no user with that phone'})
             else {
@@ -26,4 +27,16 @@ exports.checkLogin = (req,res) => {
                 })
             }
         }).catch(error => res.status(500).send(error))
+}
+
+exports.getListInFamily = (req, res) => {
+    const {idApartment} = req.query;
+
+    User.find({id_apartment: idApartment}, {password: 0, id_apartment: 0})
+        .then(
+            users => {
+                if (users) res.status(200).send({users: users})
+                else res.status(404).send({err: 'not found'})
+            }
+        ).catch(error => res.status(500).send(error))
 }
