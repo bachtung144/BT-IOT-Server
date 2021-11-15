@@ -3,7 +3,7 @@ const bodyParser= require('body-parser');
 const env       = require('./env.json');
 const cors      = require('cors');
 const mongoose = require('mongoose')
-const listDevice = require("./app/models/listDevice");
+const listDevice = require("./app/models/device");
 
 const app = express();
 app.use(cors());
@@ -14,7 +14,7 @@ const connectionParams={
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
-    dbName: "BT_IOT"
+    // dbName: "BT_IOT"
 }
 
 mongoose.connect(env.MONGODB,connectionParams)

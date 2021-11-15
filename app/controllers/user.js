@@ -14,7 +14,14 @@ exports.checkLogin = (req,res) => {
             else {
                 bcrypt.compare(req.query.password, user.password, (error, match) => {
                     if (error) res.status(500).send(error)
-                    else if (match) res.status(200).send({id:user._id,token: generateToken(user)})
+                    else if (match) res.status(200).send(
+                        {
+                            id:user._id,
+                            token: generateToken(user),
+                            type: user.type,
+                            id_apartment: user.id_apartment
+                        }
+                    )
                     else res.status(403).json({error:'passwords do not match'})
                 })
             }

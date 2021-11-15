@@ -2,20 +2,20 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-    name_user:{
+    password: {
         type: String
     },
-    rooms:[
-        { type: mongoose.Schema.Types.ObjectId, ref: 'ListRoom' }
-    ]
-    ,
-    password:{
+    phone: {
         type: String
     },
-    phone:{
-        type: String
-    }
+    type: {
+        type: String,
+        enum: ['root', 'child'],
+        default: 'child'
+    },
+    id_apartment: { type: mongoose.Schema.Types.ObjectId, ref: 'Apartment' }
+
 })
 
-const user = mongoose.model('UserModel',UserSchema,"User")
+const user = mongoose.model('UserModel', UserSchema,"User")
 module.exports = user;
