@@ -1,8 +1,7 @@
-
-const ListDevice = require('../models/listDevice')
+const Device = require('../models/device')
 
 exports.getListDevice = (req,res,next) => {
-    ListDevice.find({}).then(
+    Device.find({}).then(
         data => {
             return data;
         }
