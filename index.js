@@ -3,7 +3,7 @@ const bodyParser= require('body-parser');
 const env       = require('./env.json');
 const cors      = require('cors');
 const mongoose = require('mongoose')
-const listDevice = require("./app/models/device");
+const device = require("./app/models/device");
 
 const app = express();
 app.use(cors());
@@ -33,17 +33,36 @@ io.on("connection", (socket) => {
     socket.on("disconnect", function()
     {
     });
-    const getListDevice = () =>{
-        listDevice.find({})
+    const getListDevice = (data) =>{
+        device.find({id_room: data}) // sai
             .then(devices => {
-                if (!devices) socket.emit('Server-list-devices', JSON.stringify([]))
-                else socket.emit('Server-list-devices', JSON.stringify(devices))
-            }).catch(err => socket.emit('Server-list-devices', err))
+                if (!devices) socket.emit('Server-list-device', JSON.stringify([]))
+                else {
+                    let left = devices.filter(item => item.location[1] === 1)
+                    let middle = devices.filter(item => item.location[1] === 2)
+                    let right = devices.filter(item => item.location[1] === 3)
+                    if (right.length === 0) {
+                        socket.emit('Server-list-device', JSON.stringify({
+                            type: '2c',
+                            left: left,
+                            right: middle
+                        }))
+                    }
+                else {
+                        socket.emit('Server-list-device', JSON.stringify({
+                            type: '3c',
+                            left: left,
+                            middle: middle,
+                            right: right
+                        }))
+                    }
+                }
+            }).catch(err => socket.emit('Server-list-device', err))
     }
 
-    socket.on("Client-list-devices", function(data)
+    socket.on("Client-list-device", function(data)
     {
-        getListDevice()
+        getListDevice(data)
     });
 
     socket.on("Client-control-device", function(data){
@@ -51,9 +70,9 @@ io.on("connection", (socket) => {
         let {idRoom,idDevice} = convert
         let myQuery = { _id: idDevice, id_room: idRoom };
         let newValue = { $set: { status:convert?.status } };
-        listDevice.updateOne(myQuery,newValue,(err,res) => {
+        device.updateOne(myQuery,newValue,(err,res) => {
             if (err) console.log(err);
-            getListDevice()
+            getListDevice(idRoom)
         })
     })
 });
