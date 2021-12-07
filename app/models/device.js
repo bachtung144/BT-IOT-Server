@@ -9,7 +9,7 @@ const DeviceSchema = new Schema({
         type: Number
     },
     location: {
-        type: String
+        type: Array
     },
     id_room: { type: mongoose.Schema.Types.ObjectId, ref: 'Room' }
 })
