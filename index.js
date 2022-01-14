@@ -27,7 +27,7 @@ mongoose.connect(env.MONGODB,connectionParams)
 
 const server = require("http").Server(app);
 const io = require("socket.io")(server);
-server.listen(3000);
+server.listen(env.PORT);
 
 io.on("connection", (socket) => {
     socket.on("disconnect", function()
@@ -48,7 +48,7 @@ io.on("connection", (socket) => {
                             right: middle
                         }))
                     }
-                else {
+                    else {
                         socket.emit('Server-list-device', JSON.stringify({
                             type: '3c',
                             left: left,

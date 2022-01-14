@@ -1,5 +1,5 @@
-const Apartment = require('../models/apartment')
-const Building = require("../models/building");
+const Apartment = require('../../models/apartment')
+const Building = require("../../models/building");
 
 exports.getInfor = (req,res) => {
     const {idApartment} = req.params;

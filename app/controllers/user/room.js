@@ -1,4 +1,4 @@
-const Room = require('../models/room')
+const Room = require('../../models/room')
 
 exports.getAllListRoom = (req,res) => {
     const {page,limit,idApartment} = req.query;

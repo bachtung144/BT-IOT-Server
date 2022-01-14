@@ -1,4 +1,4 @@
-const Device = require('../models/device')
+const Device = require('../../models/device')
 
 exports.getListDevice = (req,res,next) => {
     Device.find({}).then(
