@@ -4,5 +4,6 @@ router.use(require('./building'));
 router.use(require('./apartment'));
 router.use(require('./room'));
 router.use(require('./user'));
+router.use(require('./device'));
 
 module.exports = router;

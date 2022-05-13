@@ -2,9 +2,9 @@ const Apartment = require('../../models/apartment')
 const Building = require("../../models/building");
 
 exports.getInfor = (req,res) => {
-    const {idApartment} = req.params;
+    const {apartmentId} = req.params;
 
-    Apartment.findById(idApartment)
+    Apartment.findById(apartmentId)
         .then( apartment => {
             if (apartment) {
                 Building.findById(apartment.id_building).then(

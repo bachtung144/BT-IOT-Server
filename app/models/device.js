@@ -8,9 +8,6 @@ const DeviceSchema = new Schema({
     status: {
         type: Number
     },
-    location: {
-        type: Array
-    },
     id_room: { type: mongoose.Schema.Types.ObjectId, ref: 'Room' }
 })
 

@@ -1,33 +1,35 @@
 const Apartment = require("../../models/apartment");
 
-exports.getByIdBuilding = (req,res) => {
-    Apartment.find(req.query)
-        .then(data => {
-            if (data) {
-                res.status(200).send({data: data})
-            }
-            else res.status(404).send({err: 'not found'})
-        }).catch( err => res.status(500).send({err: err}))
+const findBuilding = async (res, query) => {
+    const apartment = await Apartment.find(query)
+    if (apartment) res.status(200).send({data: apartment})
+    else res.status(404).send({err: 'not found'})
+}
+
+exports.getByIdBuilding = async (req, res) => {
+    await findBuilding(res, req.query)
 }
 
 exports.update = (req,res) => {
     let id = req.params.id;
     let {address} = req.body
     let data = {address}
-    Apartment.findOneAndUpdate({_id: id}, {$set:data}, {new: true}, (err, doc) => {
+    Apartment.findOneAndUpdate({_id: id}, {$set:data}, {new: true}, async (err, doc) => {
+        if (err) res.status(500).send({err: err})
+        else await findBuilding(res, {id_building: doc.id_building})
+    });
+}
+
+exports.addNew = (req,res) => {
+    let {address, id_building} = req.body
+    let data = {address, id_building}
+    let apart1 = new Apartment(data)
+    apart1.save(async (err) => {
         if (err) {
             res.status(500).send({err: err})
         }
-        else {
-            Apartment.find({id_building: doc.id_building})
-                .then(data => {
-                    if (data) {
-                        res.status(200).send({data: data})
-                    }
-                    else res.status(404).send({err: 'not found'})
-                }).catch( err => res.status(500).send({err: err}))
-        }
-    });
+        else await findBuilding(res, {id_building: id_building})
+    })
 }
 
 exports.delete = (req,res) => {
@@ -56,23 +58,4 @@ exports.delete = (req,res) => {
         }).catch( err => res.status(500).send({err: err}))
 }
 
-exports.addNew = (req,res) => {
-    let {address, id_building} = req.body
-    let data = {address, id_building}
-    let apart1 = new Apartment(data)
-    apart1.save((err) => {
-        if (err) {
-            res.status(500).send({err: err})
-        }
-        else {
-            Apartment.find({id_building: id_building})
-                .then(data => {
-                    if (data) {
-                        res.status(200).send({data: data})
-                    }
-                    else res.status(404).send({err: 'not found'})
-                }).catch( err => res.status(500).send({err: err}))
-        }
-    })
-}
 
