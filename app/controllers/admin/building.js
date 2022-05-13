@@ -1,4 +1,8 @@
 const Building = require("../../models/building");
+const Apartment = require("../../models/apartment");
+const Room = require("../../models/room");
+const User = require("../../models/user");
+const Device = require("../../models/device");
 
 const findAllBuilding = async (res) => {
     const building = await Building.find({})
@@ -20,10 +24,22 @@ exports.update = (req,res) => {
     });
 }
 
-exports.delete = async (req, res) => {
+exports.delete = async (req, res, next) => {
     let id = req.params.id;
+    let apartIds = await Apartment.find({id_building: id},'_id')
+    let tmpApartIds = apartIds.map(item => item?._id)
+    let roomIds = await Room.find({id_apartment: {$in: tmpApartIds}}, '_id')
+    let tmpRoomIds = roomIds.map(item => item?._id)
+
     const building = await Building.deleteOne({_id: id})
-    if (building) await findAllBuilding(res)
+    const apartment = await Apartment.deleteMany({id_building: id})
+    if (tmpApartIds !== []) {
+        await User.deleteMany({id_apartment: {$in: tmpApartIds}})
+        await Room.deleteMany({id_apartment: {$in: tmpApartIds}})
+    }
+    if (tmpRoomIds !== []) await Device.deleteMany({id_room: {$in: tmpRoomIds}})
+
+    if (building && apartment ) await findAllBuilding(res)
     else res.status(500).send({err: 'delete error'})
 }
 
