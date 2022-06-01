@@ -30,9 +30,12 @@ exports.updateDevice = (req,res, next) => {
                 if (err) {
                     res.send(err);
                 } else {
-                    if (deviceId === '627b597cf0a3d2b52ab05b35')
-                        prgMqtt.client.publish('IoT47_MQTT_Test', JSON.stringify(status))
-                    else console.log('not connect esp 8266')
+                        prgMqtt.client.publish('IoT47_MQTT_Test',
+                            JSON.stringify(
+                                {chipId: doc?.input?.chipId,
+                                    gpio: doc?.input?.gpio,
+                                    status: status}
+                            ))
                     res.send({
                         msg: "success",
                         devices: result

@@ -1,4 +1,5 @@
 const Room = require("../../models/room");
+const Device = require("../../models/device");
 
 const findRoom = async (res, query) => {
     const room = await Room.find(query)
@@ -30,3 +31,13 @@ exports.addNew = (req,res) => {
     })
 }
 
+exports.delete = async (req,res) => {
+    let id = req.params.id;
+    let roomId = await Room.findById(id, 'id_apartment')
+
+    const room = await Room.deleteOne({_id: id})
+    await Device.deleteMany({id_room: id})
+
+    if (room) {await findRoom(res, {id_apartment: roomId?.id_apartment})}
+    else res.status(500).send({err: 'delete error'})
+}

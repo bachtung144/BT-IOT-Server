@@ -63,3 +63,23 @@ exports.getInfor = async (req, res) => {
         }
     }
 }
+
+exports.checkLogin = async (req, res) => {
+    const {phone, password} = req.body
+    const user = await User.findOne({phone: phone})
+
+    if (!user) res.status(401).send({msg: 'Số điện thoại hoặc mật khẩu không đúng!!'})
+    else {
+        bcrypt.compare(password, user.password, (error, match) => {
+            if (match) res.status(200).send(
+                {
+                    id: user._id,
+                    token: generateToken(user),
+                    type: user.type,
+                    id_apartment: user.id_apartment
+                }
+            )
+            else res.status(401).json({msg: 'Số điện thoại hoặc mật khẩu không đúng!!'})
+        })
+    }
+}

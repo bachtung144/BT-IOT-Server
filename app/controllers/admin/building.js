@@ -31,6 +31,7 @@ exports.delete = async (req, res, next) => {
     let roomIds = await Room.find({id_apartment: {$in: tmpApartIds}}, '_id')
     let tmpRoomIds = roomIds.map(item => item?._id)
 
+
     const building = await Building.deleteOne({_id: id})
     const apartment = await Apartment.deleteMany({id_building: id})
     if (tmpApartIds !== []) {
