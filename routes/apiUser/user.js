@@ -8,6 +8,6 @@ app.route('/user/list-in-family').get(controller.getListInFamily);
 
 app.route('/user/:userId').get(controller.getInfor);
 
-app.route('/user/change-password').post(controller.changePassword);
+app.route('/user/change-password').put(controller.changePassword);
 
 module.exports = app;

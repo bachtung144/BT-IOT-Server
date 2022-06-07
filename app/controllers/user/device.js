@@ -1,4 +1,5 @@
 const Device = require('../../models/device')
+const Chip = require('../../models/chip')
 const mqtt = require('mqtt');
 
 function prgMqtt() {
@@ -21,25 +22,25 @@ exports.updateDevice = (req,res, next) => {
         newValue,
         {new: true, useFindAndModify: false},
         (err, doc) => {
-            if (err) {
-                res.send({
-                    msg: "failed"
-                })
-            }
-            Device.find({id_room: doc?.id_room }, (err, result) => {
-                if (err) {
-                    res.send(err);
-                } else {
-                        prgMqtt.client.publish('IoT47_MQTT_Test',
-                            JSON.stringify(
-                                {chipId: doc?.input?.chipId,
-                                    gpio: doc?.input?.gpio,
-                                    status: status}
-                            ))
-                    res.send({
-                        msg: "success",
-                        devices: result
-                    });
+            if (err) res.send(err);
+            Device.find({id_room: doc?.id_room }, (err, devices) => {
+                if (err) res.send(err);
+                 else {
+                    Chip.findOne({esp_id: doc?.input?.esp_id}, (err, result) => {
+                        if (err) res.send(err);
+                        else {
+                            prgMqtt.client.publish('IoT47_MQTT_Test',
+                                JSON.stringify(
+                                    {chipId: result?.esp_id,
+                                        gpio: result?.list_gpio?.find(data => data.id === doc?.input?.gpio_id).value,
+                                        status: status}
+                                ))
+                            res.send({
+                                msg: "success",
+                                devices: devices
+                            });
+                        }
+                    })
                 }
             })
         }

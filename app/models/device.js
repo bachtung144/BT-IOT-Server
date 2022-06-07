@@ -2,11 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const InputSchema = new Schema({
-    chipId: {
-        type: String
-    },
-    gpio: {
-        type: Number
+    esp_id: { type: String },
+    gpio_id: {
+        type: String,
+        enum: ['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'],
     }
 });
 

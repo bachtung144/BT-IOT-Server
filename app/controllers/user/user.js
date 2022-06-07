@@ -64,22 +64,19 @@ exports.getInfor = async (req, res) => {
     }
 }
 
-exports.checkLogin = async (req, res) => {
-    const {phone, password} = req.body
-    const user = await User.findOne({phone: phone})
+exports.changePassword = async (req, res) => {
+    const {oldPassword, newPassword, id} = req.body
+    const user = await User.findById(id,'password')
 
-    if (!user) res.status(401).send({msg: 'Số điện thoại hoặc mật khẩu không đúng!!'})
-    else {
-        bcrypt.compare(password, user.password, (error, match) => {
-            if (match) res.status(200).send(
-                {
-                    id: user._id,
-                    token: generateToken(user),
-                    type: user.type,
-                    id_apartment: user.id_apartment
-                }
-            )
-            else res.status(401).json({msg: 'Số điện thoại hoặc mật khẩu không đúng!!'})
-        })
-    }
+    bcrypt.compare(oldPassword, user?.password, (error, match) => {
+        if (match) {
+            bcrypt.hash(newPassword, 10, function(err, hash) {
+                User.findOneAndUpdate({_id:id},{$set:{password: hash}}, {useFindAndModify: false}, (err,doc) => {
+                    if (err) res.status(404).json({msg: 'Có lỗi xin hãy thử lại!'})
+                    else res.status(200).json({msg: 'Cập nhật mật khẩu thành công'})
+                })
+            })
+        }
+        else res.status(403).json({msg: 'Bạn nhập sai mật khẩu cũ'})
+    })
 }
