@@ -16,8 +16,8 @@ exports.getByIdApart = async (req, res) => {
 
 exports.update = (req,res) => {
     let id = req.params.id;
-    let {phone, type} = req.body
-    let data = {phone, type}
+    let {phone} = req.body
+    let data = {phone}
     User.findOneAndUpdate({_id: id}, {$set:data}, {new: true}, async (err, doc) => {
         if (err) res.status(500).send({err: err})
         else await findUser(res, {id_apartment: doc.id_apartment})
@@ -25,10 +25,10 @@ exports.update = (req,res) => {
 }
 
 exports.addNew = (req,res) => {
-    let {phone, type, id_apartment} = req.body
+    let {phone, id_apartment} = req.body
     bcrypt.hash('1234', 10, function(err, hash) {
         let password = hash
-        let data = {phone, type, password, id_apartment}
+        let data = {phone, password, id_apartment}
         let user1 = new User(data)
         user1.save(async (err) => {
             if (err) res.status(500).send({err: err})

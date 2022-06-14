@@ -3,7 +3,6 @@ const bodyParser= require('body-parser');
 const env       = require('./env.json');
 const cors      = require('cors');
 const mongoose = require('mongoose')
-const device = require("./app/models/device");
 
 const app = express();
 app.use(cors());

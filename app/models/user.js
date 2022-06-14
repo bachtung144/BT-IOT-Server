@@ -8,11 +8,6 @@ const UserSchema = new Schema({
     phone: {
         type: String
     },
-    type: {
-        type: String,
-        enum: ['root', 'child'],
-        default: 'child'
-    },
     id_apartment: { type: mongoose.Schema.Types.ObjectId, ref: 'Apartment' }
 
 })

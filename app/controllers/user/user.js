@@ -38,7 +38,7 @@ exports.getListInFamily = (req, res) => {
                 if (users) res.status(200).send({users: users})
                 else res.status(404).send({err: 'not found'})
             }
-        ).catch(error => res.status(404).send({err: 'not found'}))
+        ).catch(error => res.status(404).send({err: error}))
 }
 
 exports.getInfor = async (req, res) => {
@@ -53,6 +53,7 @@ exports.getInfor = async (req, res) => {
             const building = await Building.findById(apart?.id_building)
             if (!building) res.status(404).send({msg: 'người dùng chưa thuộc tòa nhà nào'})
             else res.status(200).send({
+                id: user._id,
                 phone: user.phone,
                 building: building.name,
                 address: building.address,
@@ -67,13 +68,12 @@ exports.getInfor = async (req, res) => {
 exports.changePassword = async (req, res) => {
     const {oldPassword, newPassword, id} = req.body
     const user = await User.findById(id,'password')
-
     bcrypt.compare(oldPassword, user?.password, (error, match) => {
         if (match) {
             bcrypt.hash(newPassword, 10, function(err, hash) {
                 User.findOneAndUpdate({_id:id},{$set:{password: hash}}, {useFindAndModify: false}, (err,doc) => {
                     if (err) res.status(404).json({msg: 'Có lỗi xin hãy thử lại!'})
-                    else res.status(200).json({msg: 'Cập nhật mật khẩu thành công'})
+                    else res.status(200).json({msg: 'Cập nhật mật khẩu thành công! Hãy đăng nhập lại'})
                 })
             })
         }
