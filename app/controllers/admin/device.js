@@ -30,15 +30,15 @@ exports.update = (req,res) => {
                          console.log(doc2)
                      })
             }
-            await findDevice(res, {id_room: doc.id_room})
+            await findDevice(res, {room_id: doc.room_id})
         }
     });
 }
 
 exports.addNew = (req,res) => {
-    let {name, id_room, input} = req.body
+    let {name, room_id, input} = req.body
     let status = 0
-    let data = {name, id_room, status, input}
+    let data = {name, room_id, status, input}
     let tmpDevice = new Device(data)
     Chip.findOneAndUpdate({esp_id: input?.esp_id},{$set:{"list_gpio.$[el].used": true}},
         {arrayFilters: [{ "el.id": input?.gpio_id }], new: true},(err, doc) => {
@@ -50,7 +50,7 @@ exports.addNew = (req,res) => {
                     if (err) {
                         res.status(500).send({err: err})
                     }
-                    else await findDevice(res, {id_room: id_room})
+                    else await findDevice(res, {room_id: room_id})
                 })
             }
         })
@@ -68,7 +68,7 @@ exports.delete = async (req,res) => {
             else {
                 const device = await Device.deleteOne({_id: id})
 
-                if (device) {await findDevice(res, {id_room: deviceId?.id_room})}
+                if (device) {await findDevice(res, {room_id: deviceId?.room_id})}
                 else res.status(500).send({err: 'delete error'})
             }
         })

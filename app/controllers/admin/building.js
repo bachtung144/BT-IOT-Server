@@ -26,19 +26,19 @@ exports.update = (req,res) => {
 
 exports.delete = async (req, res, next) => {
     let id = req.params.id;
-    let apartIds = await Apartment.find({id_building: id},'_id')
+    let apartIds = await Apartment.find({building_id: id},'_id')
     let tmpApartIds = apartIds.map(item => item?._id)
-    let roomIds = await Room.find({id_apartment: {$in: tmpApartIds}}, '_id')
+    let roomIds = await Room.find({apartment_id: {$in: tmpApartIds}}, '_id')
     let tmpRoomIds = roomIds.map(item => item?._id)
 
 
     const building = await Building.deleteOne({_id: id})
-    const apartment = await Apartment.deleteMany({id_building: id})
+    const apartment = await Apartment.deleteMany({building_id: id})
     if (tmpApartIds !== []) {
-        await User.deleteMany({id_apartment: {$in: tmpApartIds}})
-        await Room.deleteMany({id_apartment: {$in: tmpApartIds}})
+        await User.deleteMany({apartment_id: {$in: tmpApartIds}})
+        await Room.deleteMany({apartment_id: {$in: tmpApartIds}})
     }
-    if (tmpRoomIds !== []) await Device.deleteMany({id_room: {$in: tmpRoomIds}})
+    if (tmpRoomIds !== []) await Device.deleteMany({room_id: {$in: tmpRoomIds}})
 
     if (building && apartment ) await findAllBuilding(res)
     else res.status(500).send({err: 'delete error'})

@@ -17,27 +17,27 @@ exports.update = (req,res) => {
     let data = {name}
     Room.findOneAndUpdate({_id: id}, {$set:data}, {new: true}, async (err, doc) => {
         if (err) res.status(500).send({err: err})
-        else await findRoom(res,{id_apartment: doc.id_apartment})
+        else await findRoom(res,{apartment_id: doc.apartment_id})
     });
 }
 
 exports.addNew = (req,res) => {
-    let {name, id_apartment} = req.body
-    let data = {name, id_apartment}
+    let {name, apartment_id} = req.body
+    let data = {name, apartment_id}
     let room1 = new Room(data)
     room1.save(async (err) => {
         if (err) res.status(500).send({err: err})
-        else await findRoom(res,{id_apartment: id_apartment})
+        else await findRoom(res,{apartment_id: apartment_id})
     })
 }
 
 exports.delete = async (req,res) => {
     let id = req.params.id;
-    let roomId = await Room.findById(id, 'id_apartment')
+    let roomId = await Room.findById(id, 'apartment_id')
 
     const room = await Room.deleteOne({_id: id})
-    await Device.deleteMany({id_room: id})
+    await Device.deleteMany({room_id: id})
 
-    if (room) {await findRoom(res, {id_apartment: roomId?.id_apartment})}
+    if (room) {await findRoom(res, {apartment_id: roomId?.apartment_id})}
     else res.status(500).send({err: 'delete error'})
 }

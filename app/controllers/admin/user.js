@@ -20,30 +20,30 @@ exports.update = (req,res) => {
     let data = {phone}
     User.findOneAndUpdate({_id: id}, {$set:data}, {new: true}, async (err, doc) => {
         if (err) res.status(500).send({err: err})
-        else await findUser(res, {id_apartment: doc.id_apartment})
+        else await findUser(res, {apartment_id: doc.apartment_id})
     });
 }
 
 exports.addNew = (req,res) => {
-    let {phone, id_apartment} = req.body
+    let {phone, apartment_id} = req.body
     bcrypt.hash('1234', 10, function(err, hash) {
         let password = hash
-        let data = {phone, password, id_apartment}
+        let data = {phone, password, apartment_id}
         let user1 = new User(data)
         user1.save(async (err) => {
             if (err) res.status(500).send({err: err})
-            else await findUser(res, {id_apartment: id_apartment})
+            else await findUser(res, {apartment_id: apartment_id})
         })
     });
 }
 
 exports.delete = async (req,res) => {
     let id = req.params.id;
-    let userId = await User.findById(id, 'id_apartment')
+    let userId = await User.findById(id, 'apartment_id')
 
     const user = await User.deleteOne({_id: id})
 
-    if (user) {await findUser(res, {id_apartment: userId?.id_apartment})}
+    if (user) {await findUser(res, {apartment_id: userId?.apartment_id})}
     else res.status(500).send({err: 'delete error'})
 }
 

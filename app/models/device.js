@@ -16,7 +16,7 @@ const DeviceSchema = new Schema({
     status: {
         type: Number
     },
-    id_room: { type: mongoose.Schema.Types.ObjectId, ref: 'Room' },
+    room_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Room' },
     input: {
         type: InputSchema,
         unique: true

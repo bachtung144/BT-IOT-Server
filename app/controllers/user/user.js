@@ -21,7 +21,7 @@ exports.checkLogin = async (req, res) => {
                     id: user._id,
                     token: generateToken(user),
                     type: user.type,
-                    id_apartment: user.id_apartment
+                    apartment_id: user.apartment_id
                 }
             )
             else res.status(401).json({msg: 'Số điện thoại hoặc mật khẩu không đúng!!'})
@@ -30,9 +30,9 @@ exports.checkLogin = async (req, res) => {
 }
 
 exports.getListInFamily = (req, res) => {
-    const {idApartment} = req.query;
+    const {apartmentId} = req.query;
 
-    User.find({id_apartment: idApartment}, {password: 0, id_apartment: 0})
+    User.find({apartment_id: apartmentId}, {password: 0, apartment_id: 0})
         .then(
             users => {
                 if (users) res.status(200).send({users: users})
@@ -47,10 +47,10 @@ exports.getInfor = async (req, res) => {
 
     if (!user) res.status(404).send({msg: 'không tìm thấy người dùng'})
     else {
-        const apart = await Apartment.findById(user?.id_apartment)
+        const apart = await Apartment.findById(user?.apartment_id)
         if (!apart) res.status(404).send({msg: 'người dùng chưa thuộc căn hộ nào'})
         else {
-            const building = await Building.findById(apart?.id_building)
+            const building = await Building.findById(apart?.building_id)
             if (!building) res.status(404).send({msg: 'người dùng chưa thuộc tòa nhà nào'})
             else res.status(200).send({
                 id: user._id,

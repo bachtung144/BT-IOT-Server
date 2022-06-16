@@ -8,7 +8,7 @@ const UserSchema = new Schema({
     phone: {
         type: String
     },
-    id_apartment: { type: mongoose.Schema.Types.ObjectId, ref: 'Apartment' }
+    apartment_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Apartment' }
 
 })
 

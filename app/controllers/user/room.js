@@ -2,16 +2,16 @@ const Room = require('../../models/room')
 const Device = require("../../models/device");
 
 exports.getAllListRoom = (req,res) => {
-    const {page,limit,idApartment} = req.query;
+    const {page,limit,apartmentId} = req.query;
     let parsePage = parseInt(page)
     let parseLimit = parseInt(limit)
     let skip =  (parsePage-1)*parseLimit
-    Room.find({id_apartment:idApartment} , {id_apartment: 0})
+    Room.find({apartment_id:apartmentId} , {apartment_id: 0})
         .skip(skip).limit(parseLimit)
         .then(rooms => {
             if (!rooms) res.status(404).send({err:'not found'})
             else res.status(200).send({rooms: rooms})
-        }).catch(err => res.status(404).send({err:'not found'}))
+        }).catch(err => res.status(404).send({err: err}))
 }
 
 exports.getListDeviceByRoom = (req,res) => {
@@ -20,7 +20,7 @@ exports.getListDeviceByRoom = (req,res) => {
     let parsePage = parseInt(page)
     let parseLimit = parseInt(limit)
     let skip =  (parsePage-1)*parseLimit
-    Device.find({id_room: roomId})
+    Device.find({room_id: roomId})
         .skip(skip).limit(parseLimit)
         .then(devices => {
             if (!devices) res.status(404).send({err:'not found'})
