@@ -8,10 +8,6 @@ function prgMqtt() {
     prgMqtt.client.on('connect', () => {
         prgMqtt.client.subscribe('IoT_MQTT_Test')
     })
-
-    // prgMqtt.client.on('message', (topic, message) => {
-    //     console.log(topic, message)
-    // })
 }
 
 exports.updateDevice = (req,res, next) => {
