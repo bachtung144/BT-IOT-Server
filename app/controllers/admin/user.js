@@ -69,3 +69,21 @@ exports.checkLogin = async (req, res) => {
         })
     }
 }
+
+exports.changePassword = async (req, res) => {
+    const {oldPassword, newPassword} = req.body
+    const admin = await Admin.find({})
+
+    bcrypt.compare(oldPassword, admin[0]?.password, (error, match) => {
+        if (match) {
+            bcrypt.hash(newPassword, 10, function(err, hash) {
+                Admin.findOneAndUpdate({_id:admin[0]?._id},{$set:{password: hash}}, {useFindAndModify: false}, (err,doc) => {
+                    if (err) res.status(404).json({msg: 'Có lỗi xin hãy thử lại!'})
+                    else res.status(200).json({msg: 'Cập nhật mật khẩu thành công! Hãy đăng nhập lại'})
+                })
+            })
+        }
+        else res.status(403).json({msg: 'Bạn nhập sai mật khẩu cũ'})
+    })
+}
+

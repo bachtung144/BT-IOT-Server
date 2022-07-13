@@ -13,10 +13,7 @@ const BuildingSchema = new Schema({
     },
     district: {
         type: String
-    },
-    location: {
-        type: Array
-    },
+    }
 })
 
 const building = mongoose.model('BuildingModel', BuildingSchema,"Building")

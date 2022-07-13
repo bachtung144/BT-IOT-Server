@@ -16,8 +16,8 @@ exports.getAll = async (req, res) => {
 
 exports.update = (req,res) => {
     let id = req.params.id;
-    let {name, address, location, city, district} = req.body
-    let data = {name, address, location, city, district}
+    let {name, address, city, district} = req.body
+    let data = {name, address, city, district}
     Building.findOneAndUpdate({_id: id}, {$set:data}, {new: true}, async (err, doc) => {
         if (err) res.status(500).send({err: err})
         else await findAllBuilding(res)
@@ -45,8 +45,8 @@ exports.delete = async (req, res, next) => {
 }
 
 exports.addNew = (req,res) => {
-    let {name, address, location, city, district} = req.body
-    let data = {name, address, location, city, district}
+    let {name, address, city, district} = req.body
+    let data = {name, address, city, district}
     let building1 = new Building(data)
     building1.save(async (err) => {
         if (err) res.status(500).send({err: err})
