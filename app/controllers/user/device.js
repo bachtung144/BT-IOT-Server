@@ -6,7 +6,7 @@ function prgMqtt() {
     prgMqtt.client = mqtt.connect('mqtt://broker.hivemq.com:1883')
 
     prgMqtt.client.on('connect', () => {
-        prgMqtt.client.subscribe('IoT_MQTT_Test')
+        prgMqtt.client.subscribe('IoT_MQTT_Control')
     })
 }
 
@@ -28,7 +28,7 @@ exports.updateDevice = (req,res, next) => {
                     Chip.findOne({esp_id: doc?.input?.esp_id}, (err, result) => {
                         if (err) res.send(err);
                         else {
-                            prgMqtt.client.publish('IoT_MQTT_Test',
+                            prgMqtt.client.publish('IoT_MQTT_Control',
                                 JSON.stringify(
                                     {chipId: result?.esp_id,
                                         gpio: result?.list_gpio?.find(data => data.id === doc?.input?.gpio_id).value,

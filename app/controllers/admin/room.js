@@ -33,11 +33,11 @@ exports.addNew = (req,res) => {
 
 exports.delete = async (req,res) => {
     let id = req.params.id;
-    let roomId = await Room.findById(id, 'apartment_id')
+    let apartment = await Room.findById(id, 'apartment_id')
 
     const room = await Room.deleteOne({_id: id})
     await Device.deleteMany({room_id: id})
 
-    if (room) {await findRoom(res, {apartment_id: roomId?.apartment_id})}
+    if (room) {await findRoom(res, {apartment_id: apartment?.apartment_id})}
     else res.status(500).send({err: 'delete error'})
 }
